@@ -1,4 +1,3 @@
-# clinical-trials-sql-analytics
 # Clinical Trials SQL Analytics
 
 This project analyzes clinical trial data using SQL and PostgreSQL.
