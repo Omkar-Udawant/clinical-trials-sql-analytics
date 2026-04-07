@@ -47,6 +47,8 @@ Power BI Dashboard
 - interventions
 - trial_conditions
 - trial_interventions
+
+ 
 The dataset was normalized into the following relational tables:
 
 
