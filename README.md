@@ -48,7 +48,7 @@ Power BI Dashboard
 - trial_conditions
 - trial_interventions
 
- 
+  
 The dataset was normalized into the following relational tables:
 
 
@@ -68,6 +68,29 @@ This file includes:
 - staging table
 - ETL transformation
 - analytical SQL queries
+
+---
+
+## Data Governance & Quality
+
+See `/governance` for:
+
+- Role-based access control (data_steward / data_analyst / reporting_tool) with schema separation (raw / core / reporting)
+- A full data dictionary with sensitivity notes
+- Documented requirements-discovery process
+- Extended data-quality validation queries (reconciliation, orphan checks, duplicate checks, completeness checks)
+
+Governance files:
+
+- `governance/governance.sql` — roles, `raw` / `core` / `reporting` schemas, least-privilege grants, `core.load_audit_log`, sensitivity comments
+- `governance/data_dictionary.md` — column-level dictionary for the governed `core` schema
+- `governance/requirements_discovery.md` — source evaluation, requirements, and success criteria
+- `governance/data_quality_checks.sql` — post-load checks (reconciliation, null-date rate, orphans, duplicates, completeness, parse checks)
+- `governance/safe_date_fix.sql` — `safe_to_date()` fix for out-of-range dates (`2021-13-40`) that crash `TO_DATE`; apply before relying on null-date handling
+
+> Note: `governance.sql` assumes tables have been moved into `raw` / `core` / `reporting` (see the commented `ALTER TABLE ... SET SCHEMA` lines).
+> Run the schema-creation + grant parts first, skip `CREATE ROLE` if you do not want to create real Postgres users, and run
+> `data_quality_checks.sql` after each load — `row_loss` and orphan/duplicate checks should return 0, `pct_null_dates` should be stable.
 
 ---
 
