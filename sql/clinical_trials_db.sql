@@ -4,6 +4,21 @@ organization_name TEXT,
 organization_class TEXT
 );
 
+CREATE OR REPLACE FUNCTION safe_to_date(txt TEXT)
+RETURNS DATE AS $$
+BEGIN
+    IF txt ~ '^\d{4}-\d{2}$' THEN
+        RETURN TO_DATE(txt || '-01', 'YYYY-MM-DD');
+    ELSIF txt ~ '^\d{4}-\d{2}-\d{2}$' THEN
+        RETURN TO_DATE(txt, 'YYYY-MM-DD');
+    ELSE
+        RETURN NULL;
+    END IF;
+EXCEPTION WHEN OTHERS THEN
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
 CREATE TABLE trials (
 trial_id SERIAL PRIMARY KEY,
 brief_title TEXT,
@@ -118,15 +133,7 @@ s.primary_purpose,
 s.phases,
 s.overall_status,
 
-CASE
-WHEN s.start_date ~ '^\d{4}-\d{2}$'
-THEN TO_DATE(s.start_date || '-01','YYYY-MM-DD')
-
-WHEN s.start_date ~ '^\d{4}-\d{2}-\d{2}$'
-THEN TO_DATE(s.start_date,'YYYY-MM-DD')
-
-ELSE NULL
-END,
+safe_to_date(s.start_date),
 
 s.standard_age,
 o.organization_id
